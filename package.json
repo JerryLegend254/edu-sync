@@ -19,6 +19,7 @@
     "@expo-google-fonts/manrope": "^0.2.3",
     "@expo-google-fonts/train-one": "^0.2.3",
     "@expo/vector-icons": "^14.0.0",
+    "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.0.2",
     "expo": "~51.0.8",
     "expo-constants": "~16.0.1",
