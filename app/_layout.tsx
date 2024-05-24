@@ -11,7 +11,6 @@ export default function App() {
         drawerActiveTintColor: "#6759FF",
         drawerInactiveTintColor: "#fff",
         drawerItemStyle: { marginHorizontal: 20 },
-        headerShown: false,
       }}
       drawerContent={CustomDrawerComponent}
     >

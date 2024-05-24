@@ -3,6 +3,7 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import { Text, View } from "react-native";
+import Btn from "./button/button";
 export default function CustomDrawerComponent(props) {
   return (
     <DrawerContentScrollView {...props}>
@@ -29,6 +30,7 @@ export default function CustomDrawerComponent(props) {
         </View>
       </View>
       <DrawerItemList {...props} />
+      <Btn>Logout</Btn>
     </DrawerContentScrollView>
   );
 }
