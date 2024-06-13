@@ -1,9 +1,10 @@
-import { SafeAreaView, Text, StatusBar } from "react-native";
+import SafeArea from "@/components/safearea/safearea";
+import { Text } from "react-native";
 
 export default function Home() {
   return (
-    <SafeAreaView style={{ marginTop: StatusBar.currentHeight }}>
+    <SafeArea>
       <Text>Home</Text>
-    </SafeAreaView>
+    </SafeArea>
   );
 }
