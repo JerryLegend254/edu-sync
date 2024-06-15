@@ -1,26 +1,35 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useState } from "react";
+import { useToast } from "react-native-toast-notifications";
 import {
-  Alert,
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   View,
 } from "react-native";
-
-// contact me :)
-// instagram: must_ait6
-// email : mustapha.aitigunaoun@gmail.com
-
+import { useAuth } from "@/providers/AuthProvider";
+import { supabase } from "@/lib/supabase";
 export default function LoginForm() {
-  const [click, setClick] = useState(false);
-  const { username, setUsername } = useState("");
-  const { email, setEmail } = useState("");
-  const { password, setPassword } = useState("");
-  const { confirmPassword, setConfirmPassword } = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const toast = useToast();
+  const { signUpWithEmail } = useAuth();
+  async function handleSignUp() {
+    console.log(email, password, username);
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      toast.show(error.message, { type: "danger" });
+    } else {
+      toast.show("Please check your inbox for email verification!", {
+        type: "success",
+      });
+      console.log(data);
+    }
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>SIGN UP</Text>
@@ -62,15 +71,7 @@ export default function LoginForm() {
       </View>
 
       <View style={styles.buttonView}>
-        <Pressable
-          style={styles.button}
-          onPress={() =>
-            Alert.alert(
-              "Login Successfuly!",
-              "see you in my instagram if you have questions : must_ait6",
-            )
-          }
-        >
+        <Pressable style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>SIGN UP</Text>
         </Pressable>
         <Text style={styles.optionsText}>OR LOGIN WITH</Text>
@@ -89,6 +90,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     paddingTop: 70,
+    flex: 1,
+    justifyContent: "center",
   },
   image: {
     height: 160,

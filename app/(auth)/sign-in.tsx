@@ -1,4 +1,5 @@
-import { Link } from "expo-router";
+import { useAuth } from "@/providers/AuthProvider";
+import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -10,15 +11,36 @@ import {
   TextInput,
   View,
 } from "react-native";
-
+import { useToast } from "react-native-toast-notifications";
 // contact me :)
 // instagram: must_ait6
 // email : mustapha.aitigunaoun@gmail.com
 
 export default function LoginForm() {
   const [click, setClick] = useState(false);
-  const { username, setUsername } = useState("");
-  const { password, setPassword } = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { signInWithEmail, loading } = useAuth();
+  const toast = useToast();
+  function handleSignIn() {
+    if (!email || !password) {
+      toast.show("Please fill all fields", {
+        type: "danger",
+        placement: "top",
+      });
+      return;
+    }
+    signInWithEmail(email, password)
+      .then(() =>
+        toast.show("Logged in successfully", {
+          type: "success",
+          placement: "top",
+        }),
+      ) // data is the user object (data
+      .catch((error) => {
+        toast.show(error.message, { type: "danger", placement: "top" });
+      });
+  }
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Login</Text>
@@ -26,8 +48,8 @@ export default function LoginForm() {
         <TextInput
           style={styles.input}
           placeholder="EMAIL OR USERNAME"
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setEmail}
           autoCorrect={false}
           autoCapitalize="none"
         />
@@ -60,12 +82,8 @@ export default function LoginForm() {
       <View style={styles.buttonView}>
         <Pressable
           style={styles.button}
-          onPress={() =>
-            Alert.alert(
-              "Login Successfuly!",
-              "see you in my instagram if you have questions : must_ait6",
-            )
-          }
+          onPress={handleSignIn}
+          disabled={loading}
         >
           <Text style={styles.buttonText}>LOGIN</Text>
         </Pressable>
@@ -85,6 +103,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     paddingTop: 70,
+    flex: 1,
+    justifyContent: "center",
   },
   image: {
     height: 160,
