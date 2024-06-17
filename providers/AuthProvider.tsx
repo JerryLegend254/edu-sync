@@ -37,9 +37,9 @@ export default function AuthProvider({
       password: password,
     });
 
-    console.log(session);
-    if (error) throw new Error(error.message);
     setLoading(false);
+    if (error) throw new Error(error.message);
+    toast.show("Logged in successfully", { type: "success", placement: "top" });
     return session;
   }
 
@@ -54,12 +54,12 @@ export default function AuthProvider({
       password: password,
     });
 
+    setLoading(false);
     if (error) throw new Error(error.message);
     if (!session)
       toast.show("Please check your inbox for email verification!", {
         type: "success",
       });
-    setLoading(false);
     return session;
   }
 
