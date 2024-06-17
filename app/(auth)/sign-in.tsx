@@ -3,14 +3,17 @@ import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   SafeAreaView,
   StyleSheet,
+  TextInput,
   Switch,
   Text,
-  TextInput,
   View,
 } from "react-native";
+import { Button } from "react-native-paper";
+//import { TextInput } from "react-native-paper";
 import { useToast } from "react-native-toast-notifications";
 // contact me :)
 // instagram: must_ait6
@@ -31,36 +34,42 @@ export default function LoginForm() {
       return;
     }
     signInWithEmail(email, password)
-      .then(() =>
-        toast.show("Logged in successfully", {
-          type: "success",
-          placement: "top",
-        }),
-      ) // data is the user object (data
+      .then(() => router.push("(home)"))
       .catch((error) => {
         toast.show(error.message, { type: "danger", placement: "top" });
       });
   }
   return (
     <SafeAreaView style={styles.container}>
+      <Image
+        source={require("../../assets/images/waves.jpg")}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
+        resizeMode="contain"
+      />
       <Text style={styles.title}>Login</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
-          placeholder="EMAIL OR USERNAME"
+          placeholder="email"
           value={email}
           onChangeText={setEmail}
           autoCorrect={false}
           autoCapitalize="none"
+          placeholderTextColor={"white"}
         />
         <TextInput
           style={styles.input}
-          placeholder="PASSWORD"
+          placeholder="password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
           autoCorrect={false}
           autoCapitalize="none"
+          placeholderTextColor={"white"}
         />
       </View>
       <View style={styles.rememberView}>
@@ -78,16 +87,15 @@ export default function LoginForm() {
           </Pressable>
         </View>
       </View>
-
-      <View style={styles.buttonView}>
-        <Pressable
-          style={styles.button}
+      <View style={{ marginHorizontal: 20, width: "78%" }}>
+        <Button
+          mode="contained"
+          buttonColor="#6ba4ff"
+          style={{ borderRadius: 8, width: "100%", paddingVertical: 4 }}
           onPress={handleSignIn}
-          disabled={loading}
         >
-          <Text style={styles.buttonText}>LOGIN</Text>
-        </Pressable>
-        <Text style={styles.optionsText}>OR LOGIN WITH</Text>
+          Login
+        </Button>
       </View>
 
       <Text style={styles.footerText}>
@@ -116,7 +124,7 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     textAlign: "center",
     paddingVertical: 40,
-    color: "blue",
+    color: "white",
   },
   inputView: {
     gap: 15,
@@ -126,10 +134,11 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    paddingHorizontal: 20,
-    borderColor: "blue",
+    paddingHorizontal: 16,
+    borderColor: "white",
     borderWidth: 1,
-    borderRadius: 7,
+    borderRadius: 8,
+    color: "#fff",
   },
   rememberView: {
     width: "100%",
@@ -150,10 +159,10 @@ const styles = StyleSheet.create({
   },
   forgetText: {
     fontSize: 11,
-    color: "blue",
+    color: "white",
   },
   button: {
-    backgroundColor: "blue",
+    backgroundColor: "white",
     height: 45,
     borderColor: "gray",
     borderWidth: 1,
@@ -188,11 +197,12 @@ const styles = StyleSheet.create({
     height: 40,
   },
   footerText: {
+    marginTop: 16,
     textAlign: "center",
     color: "gray",
   },
   signup: {
-    color: "blue",
+    color: "white",
     fontSize: 13,
   },
 });
