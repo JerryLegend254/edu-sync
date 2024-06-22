@@ -1,7 +1,13 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function Home() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Redirect href="(auth)/sign-in" />;
+  }
   return (
     <Tabs screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
       <Tabs.Screen
@@ -29,7 +35,7 @@ export default function Home() {
         }}
       />
       <Tabs.Screen
-        name="(settings)/settings"
+        name="(settings)"
         options={{
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="settings-outline" size={size} color={color} />

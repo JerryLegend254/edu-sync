@@ -63,7 +63,13 @@ export default function AuthProvider({
     return session;
   }
 
-  async function signOut() {}
+  async function signOut() {
+    setLoading(true);
+    const { error } = await supabase.auth.signOut();
+    setuser(null);
+    setLoading(false);
+    if (error) throw new Error(error.message);
+  }
   return (
     <AuthContext.Provider
       value={{ signUpWithEmail, signInWithEmail, signOut, user, loading }}
