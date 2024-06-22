@@ -13,17 +13,13 @@ import {
   View,
 } from "react-native";
 import { Button } from "react-native-paper";
-//import { TextInput } from "react-native-paper";
-import { useToast } from "react-native-toast-notifications";
-// contact me :)
-// instagram: must_ait6
-// email : mustapha.aitigunaoun@gmail.com
 
+import { useToast } from "react-native-toast-notifications";
 export default function LoginForm() {
   const [click, setClick] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signInWithEmail, loading } = useAuth();
+  const { signInWithEmail } = useAuth();
   const toast = useToast();
   function handleSignIn() {
     if (!email || !password) {
@@ -33,11 +29,9 @@ export default function LoginForm() {
       });
       return;
     }
-    signInWithEmail(email, password)
-      .then(() => router.push("(home)"))
-      .catch((error) => {
-        toast.show(error.message, { type: "danger", placement: "top" });
-      });
+    signInWithEmail(email, password).catch((error) => {
+      toast.show(error.message, { type: "danger", placement: "top" });
+    });
   }
   return (
     <SafeAreaView style={styles.container}>

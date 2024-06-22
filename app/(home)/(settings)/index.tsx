@@ -1,10 +1,13 @@
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View } from "react-native";
 import SafeArea from "@/components/safearea/safearea";
 import { Ionicons } from "@expo/vector-icons";
 import ProfileSettingsCard from "@/components/profile/profile-settings-card";
 import Spacer from "@/components/spacer/spacer";
+import { Button } from "react-native-paper";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function SettingsScreen() {
+  const { signOut } = useAuth();
   return (
     <SafeArea>
       <View style={{ alignItems: "center", gap: 16 }}>
@@ -64,6 +67,7 @@ export default function SettingsScreen() {
           subtitle="Personalize your categories"
           onPress={() => {}}
         />
+        <Button onPress={signOut}>Sign Out</Button>
       </View>
     </SafeArea>
   );
