@@ -1,5 +1,6 @@
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
+import DialogAndroid from 'react-native-dialogs';;
 import { useToast } from "react-native-toast-notifications";
 import {
   Image,
@@ -13,16 +14,23 @@ import {
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 import { Button } from "react-native-paper";
+import TextInputIcon from "react-native-paper/lib/typescript/components/TextInput/Adornment/TextInputIcon";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordShown, setIsPasswordShown]= useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isConfirmPasswordShown, setIsConfirmPasswordShown]= useState(false);
   const toast = useToast();
   const { signUpWithEmail } = useAuth();
   async function handleSignUp() {
     console.log(email, password, username);
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    let wsRegex = /^\s+|\s+$/g;
+    const replaceemail = email.replaceAll(wsRegex, "");
+    const { data, error } = await supabase.auth.signUp({ email:replaceemail, password });
     if (error) {
       toast.show(error.message, { type: "danger" });
     } else {
@@ -64,26 +72,62 @@ export default function LoginForm() {
           autoCapitalize="none"
           placeholderTextColor={"white"}
         />
+        </View>
+        <View style={styles.inputView}>
         <TextInput
           style={styles.input}
           placeholder="password"
-          secureTextEntry
+          secureTextEntry={!isPasswordShown}
           value={password}
           onChangeText={setPassword}
           autoCorrect={false}
           autoCapitalize="none"
           placeholderTextColor={"white"}
         />
+         <TouchableOpacity
+          onPress={() =>setIsPasswordShown(!isPasswordShown)}
+          style={{
+            position: "absolute",
+            right: 50,
+            top: 12
+          }}
+          >
+          {
+            isPasswordShown == true ? (
+              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
+            ) :(
+              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
+            )
+          }
+        </TouchableOpacity>
+        </View>
+        <View style={styles.password}>
         <TextInput
           style={styles.input}
           placeholder="confirm password"
-          secureTextEntry
+          secureTextEntry={!isConfirmPasswordShown}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           autoCorrect={false}
           autoCapitalize="none"
           placeholderTextColor={"white"}
         />
+        <TouchableOpacity
+          onPress={() =>setIsConfirmPasswordShown(!isConfirmPasswordShown)}
+          style={{
+            position: "absolute",
+            right: 50,
+            top: 12
+          }}
+          >
+          {
+            isConfirmPasswordShown == true ? (
+              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
+            ) :(
+              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
+            )
+          }
+          </TouchableOpacity>
       </View>
 
       <View style={{ marginHorizontal: 20, width: "78%" }}>
@@ -125,6 +169,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: 40,
     color: "white",
+  },
+  password:{
+    gap: 15,
+    width: "100%",
+    paddingHorizontal: 40,
+    marginBottom: 15,
   },
   inputView: {
     gap: 15,
