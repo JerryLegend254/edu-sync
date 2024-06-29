@@ -7,7 +7,7 @@ import { Button } from "react-native-paper";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function SettingsScreen() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   return (
     <SafeArea>
       <View style={{ alignItems: "center", gap: 16 }}>
@@ -28,7 +28,7 @@ export default function SettingsScreen() {
             flexDirection: "row",
           }}
         >
-          <Text style={{ fontSize: 20, fontWeight: "700" }}>Jeremy Okuto</Text>
+          <Text style={{ fontSize: 20, fontWeight: "700" }}>{user?.email}</Text>
           <Ionicons name="checkmark-circle-outline" size={24} color="black" />
         </View>
       </View>
