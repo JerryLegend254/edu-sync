@@ -1,8 +1,7 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
-
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   Alert,
   Image,
@@ -15,18 +14,23 @@ import {
   View,
 } from "react-native";
 import { Button } from "react-native-paper";
-
+import { supabase } from "@/lib/supabase";
 import { useToast } from "react-native-toast-notifications";
 import { TouchableOpacity } from "react-native";
-export default function LoginForm() {
-  const [click, setClick] = useState(false);
+export default function PasswordResetForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const { signInWithEmail } = useAuth();
+  const [isPasswordShown, setIsPasswordShown]= useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isConfirmPasswordShown, setIsConfirmPasswordShown]= useState(false);
   const toast = useToast();
-  function handleSignIn() {
-    if (!email || !password) {
+  const { signInWithEmail } = useAuth();
+  async function handleResetPassword() {
+    console.log(email, password, confirmPassword);
+    let wsRegex = /^\s+|\s+$/g;
+    const replaceemail = email.replaceAll(wsRegex, "");
+
+    if (!email || !password ||!confirmPassword) {
       toast.show("Please fill all fields", {
         type: "danger",
         placement: "top",
@@ -34,10 +38,27 @@ export default function LoginForm() {
       return;
     }
     signInWithEmail(email, password).catch((error) => {
-      toast.show(error.message, { type: "danger", placement: "top" });
-    });
+        toast.show(error.message, { type: "danger", placement: "top" });
+      });
+    
+    //const handleForgotPassword = async () => {
+      try {
+        const { data,error } = await supabase.auth.resetPasswordForEmail(email,
+        );
+        if (error) {
+          console.error('Error sending reset password email:', error);
+        } else {
+          toast.show("Please check your inbox for a reset password link!", {
+            type: "success",
+          });
+          console.log(data);
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error);
+      }
   }
-  return (
+  
+  return(
     <SafeAreaView style={styles.container}>
       <Image
         source={require("../../assets/images/waves.jpg")}
@@ -48,7 +69,7 @@ export default function LoginForm() {
         }}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Forgot password</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
@@ -58,7 +79,8 @@ export default function LoginForm() {
           autoCorrect={false}
           autoCapitalize="none"
           placeholderTextColor={"white"}
-        />
+          />
+       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
           placeholder="password"
@@ -68,93 +90,68 @@ export default function LoginForm() {
           autoCorrect={false}
           autoCapitalize="none"
           placeholderTextColor={"white"}
-        />
-        <TouchableOpacity
-          onPress={() => setIsPasswordShown(!isPasswordShown)}
+          />
+          <TouchableOpacity
+          onPress={() =>setIsPasswordShown(!isPasswordShown)}
           style={{
             position: "absolute",
             right: 50,
-            top: 77,
+            top: 12
           }}
-        >
-          {isPasswordShown == true ? (
-            <Ionicons name="eye" size={24} color={"#ebedf0"} />
-          ) : (
-            <Ionicons name="eye-off" size={24} color={"#ebedf0"} />
-          )}
-        </TouchableOpacity>
-      </View>
-      <View style={styles.rememberView}>
-        <View style={styles.switch}>
-          <Switch
-            value={click}
-            onValueChange={setClick}
-            trackColor={{ true: "#4287f5", false: "gray" }}
-          />
-          <Text style={styles.rememberText}>Remember Me</Text>
-        </View>
-        <View>
-          <Pressable
-            onPress={() =>
-              Alert.alert(
-                "Forgot Password?",
-                "To reset password follow this link ",
-                [
-                  {
-                    text: "Reset",
-                    onPress: () => router.push("(auth)/forgotpassword"),
-                  },
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log("alert closed"),
-                  },
-                ],
-              )
-            }
           >
-            <Pressable
-              onPress={() =>
-                Alert.alert(
-                  "Forgot Password",
-                  "Are you sure you wish to reset your password? ",
-                  [
-                    {
-                      text: "Reset",
-                      onPress: () => router.push("(auth)/resetpassword"),
-                    },
-                    {
-                      text: "Cancel",
-                      onPress: () => console.log("alert closed"),
-                    },
-                  ],
-                )
-              }
-            >
-              <Text style={styles.forgetText}>Forgot Password?</Text>
-            </Pressable>
-          </Pressable>
+          {
+            isPasswordShown == true ? (
+              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
+            ) :(
+              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
+            )
+          }
+          </TouchableOpacity>
+          </View>
+        <View style={styles.inputView
+          
+        }>
+        <TextInput
+          style={styles.input}
+          placeholder="confirm password"
+          secureTextEntry={!isConfirmPasswordShown}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          autoCorrect={false}
+          autoCapitalize="none"
+          placeholderTextColor={"white"}
+        />
+        <TouchableOpacity
+          onPress={() =>setIsConfirmPasswordShown(!isConfirmPasswordShown)}
+          style={{
+            position: "absolute",
+            right: 50,
+            top: 12
+          }}
+          >
+          {
+            isConfirmPasswordShown == true ? (
+              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
+            ) :(
+              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
+            )
+          }
+          </TouchableOpacity>
         </View>
-      </View>
-      <View style={{ marginHorizontal: 20, width: "78%" }}>
+        </View>
+      <View style={{ marginHorizontal: 20, width: "68%" }}>
         <Button
           mode="contained"
           buttonColor="#6ba4ff"
-          style={{ borderRadius: 8, width: "100%", paddingVertical: 4 }}
-          onPress={handleSignIn}
-        >
-          Login
+          style={{ borderRadius: 12, width: "100%", paddingVertical: 4 }}
+          onPress={handleResetPassword}
+          >
+          Reset
         </Button>
       </View>
-
-      <Text style={styles.footerText}>
-        <Link href="(auth)/sign-up">
-          Don't Have Account?<Text style={styles.signup}> Sign Up</Text>
-        </Link>
-      </Text>
-    </SafeAreaView>
-  );
-}
-
+      </SafeAreaView>
+    );
+  };
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
@@ -174,22 +171,26 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     color: "white",
   },
+  password:{
+    gap: 15,
+    width: "100%",
+    paddingHorizontal: 40,
+    marginBottom: 15,
+  },
   inputView: {
     gap: 15,
     width: "100%",
     paddingHorizontal: 40,
-    marginBottom: 5,
+    marginBottom: 15,
   },
   input: {
     height: 50,
-    paddingHorizontal: 16,
+    width: "100%",
+    paddingHorizontal: 20,
     borderColor: "white",
     borderWidth: 1,
     borderRadius: 8,
     color: "#fff",
-  },
-  icon: {
-    marginLeft: 10,
   },
   rememberView: {
     width: "100%",
@@ -207,7 +208,6 @@ const styles = StyleSheet.create({
   },
   rememberText: {
     fontSize: 13,
-    color: "white",
   },
   forgetText: {
     fontSize: 11,
@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 20,
   },
   buttonText: {
     color: "white",
@@ -249,9 +250,9 @@ const styles = StyleSheet.create({
     height: 40,
   },
   footerText: {
-    marginTop: 16,
     textAlign: "center",
     color: "gray",
+    marginTop: 16,
   },
   signup: {
     color: "white",
