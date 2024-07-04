@@ -1,7 +1,7 @@
 import { useAuth } from "@/providers/AuthProvider";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 import {
   Alert,
@@ -18,12 +18,11 @@ import { Button } from "react-native-paper";
 
 import { useToast } from "react-native-toast-notifications";
 import { TouchableOpacity } from "react-native";
-import { resolveHref } from "expo-router/build/link/href";
 export default function LoginForm() {
   const [click, setClick] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isPasswordShown, setIsPasswordShown]= useState(false);
+  const [isPasswordShown, setIsPasswordShown] = useState(false);
   const { signInWithEmail } = useAuth();
   const toast = useToast();
   function handleSignIn() {
@@ -38,7 +37,6 @@ export default function LoginForm() {
       toast.show(error.message, { type: "danger", placement: "top" });
     });
   }
-
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -64,7 +62,7 @@ export default function LoginForm() {
         <TextInput
           style={styles.input}
           placeholder="password"
-          secureTextEntry = {!isPasswordShown}
+          secureTextEntry={!isPasswordShown}
           value={password}
           onChangeText={setPassword}
           autoCorrect={false}
@@ -72,20 +70,18 @@ export default function LoginForm() {
           placeholderTextColor={"white"}
         />
         <TouchableOpacity
-          onPress={() =>setIsPasswordShown(!isPasswordShown)}
+          onPress={() => setIsPasswordShown(!isPasswordShown)}
           style={{
             position: "absolute",
             right: 50,
-            top: 77
+            top: 77,
           }}
-          >
-          {
-            isPasswordShown == true ? (
-              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
-            ) :(
-              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
-            )
-          }
+        >
+          {isPasswordShown == true ? (
+            <Ionicons name="eye" size={24} color={"#ebedf0"} />
+          ) : (
+            <Ionicons name="eye-off" size={24} color={"#ebedf0"} />
+          )}
         </TouchableOpacity>
       </View>
       <View style={styles.rememberView}>
@@ -98,10 +94,24 @@ export default function LoginForm() {
           <Text style={styles.rememberText}>Remember Me</Text>
         </View>
         <View>
-          <Pressable onPress={() => Alert.alert("Forgot Password?","To reset password follow this link ",[
-            {text:'Reset', onPress:()=> router.push("(auth)/forgotpassword")} ,
-            {text: 'Cancel',onPress:()=>console.log('alert closed')}
-          ])}>
+          <Pressable
+            onPress={() =>
+              Alert.alert(
+                "Forgot Password?",
+                "To reset password follow this link ",
+                [
+                  {
+                    text: "Reset",
+                    onPress: () => router.push("(auth)/forgotpassword"),
+                  },
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("alert closed"),
+                  },
+                ],
+              )
+            }
+          >
             <Text style={styles.forgetText}>Forgot Password?</Text>
           </Pressable>
         </View>
@@ -159,9 +169,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: "#fff",
   },
-  icon: { 
-    marginLeft: 10, 
-}, 
+  icon: {
+    marginLeft: 10,
+  },
   rememberView: {
     width: "100%",
     paddingHorizontal: 50,
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
   },
   rememberText: {
     fontSize: 13,
-    color:"white",
+    color: "white",
   },
   forgetText: {
     fontSize: 11,

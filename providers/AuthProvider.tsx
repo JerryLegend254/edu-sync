@@ -1,14 +1,14 @@
+import { getCurrentUser } from "@/lib/api-functions";
 import { supabase } from "@/lib/supabase";
-import { User } from "@supabase/supabase-js";
 import { Session } from "@supabase/supabase-js";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { useToast } from "react-native-toast-notifications";
 
 interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<Session | null>;
   signOut: () => void;
   signUpWithEmail: (email: string, password: string) => Promise<Session | null>;
-  user: User | null;
+  user: Session | null;
   loading: boolean;
 }
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,20 +19,17 @@ export default function AuthProvider({
 }) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [user, setuser] = useState<User | null>(null);
+  const [user, setuser] = useState<Session | null>(null);
   supabase.auth.onAuthStateChange((_, session) => {
     if (!session || !session.user) {
       setuser(null);
       return;
     }
-    setuser(session.user);
+    setuser(session);
   });
   async function signInWithEmail(email: string, password: string) {
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
@@ -40,7 +37,7 @@ export default function AuthProvider({
     setLoading(false);
     if (error) throw new Error(error.message);
     toast.show("Logged in successfully", { type: "success", placement: "top" });
-    return session;
+    return data.session;
   }
 
   async function signUpWithEmail(email: string, password: string) {
@@ -70,9 +67,24 @@ export default function AuthProvider({
     setLoading(false);
     if (error) throw new Error(error.message);
   }
+  const memFunc = useCallback(() => {
+    async function getU() {
+      const data = await getCurrentUser(user);
+      console.log(data);
+      return data;
+    }
+    getU();
+  }, [user]);
+  memFunc();
   return (
     <AuthContext.Provider
-      value={{ signUpWithEmail, signInWithEmail, signOut, user, loading }}
+      value={{
+        signUpWithEmail,
+        signInWithEmail,
+        signOut,
+        user,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>
