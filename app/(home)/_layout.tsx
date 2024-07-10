@@ -3,9 +3,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { session } = useAuth();
 
-  if (!user?.user) {
+  if (!session?.user) {
     return <Redirect href="(auth)/sign-in" />;
   }
   return (

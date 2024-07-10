@@ -1,11 +1,25 @@
 import SafeArea from "@/components/safearea/safearea";
 import SectionBar, { Section } from "@/components/sectionBar/section-bar";
 import Spacer from "@/components/spacer/spacer";
+import COLORS from "@/constants/colors";
+import { getUserTasks } from "@/lib/api-functions";
+import { useAuth } from "@/providers/AuthProvider";
 import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, Text, View } from "react-native";
 import { ProgressBar } from "react-native-paper";
 
 export default function Home() {
+  const { session } = useAuth();
+  const { data } = useQuery({
+    queryKey: ["myTasks"],
+    queryFn: async () => {
+      if (!session) return;
+      console.log("see this");
+      await getUserTasks(session);
+    },
+  });
+  console.log(data);
   return (
     <SafeArea>
       <View
@@ -56,7 +70,7 @@ export default function Home() {
                 borderRadius: 24,
                 justifyContent: "space-between",
                 alignItems: "center",
-                backgroundColor: "gray",
+                backgroundColor: COLORS.gray,
               }}
             >
               <View>
@@ -83,7 +97,7 @@ export default function Home() {
               style={{
                 padding: 16,
                 gap: 8,
-                backgroundColor: "#1392BA",
+                backgroundColor: COLORS.blue,
                 borderRadius: 24,
               }}
             >
@@ -130,7 +144,7 @@ export default function Home() {
                 flex: 0.5,
                 padding: 16,
                 gap: 8,
-                backgroundColor: "orange",
+                backgroundColor: COLORS.orange,
                 borderRadius: 24,
               }}
             >
@@ -158,7 +172,7 @@ export default function Home() {
                 flex: 0.5,
                 padding: 16,
                 gap: 8,
-                backgroundColor: "purple",
+                backgroundColor: COLORS.purple,
                 borderRadius: 24,
               }}
             >
@@ -182,6 +196,18 @@ export default function Home() {
               </View>
             </View>
           </View>
+        </View>
+        <Spacer position="vertical" size={40} />
+        <View>
+          <SectionBar
+            leftText="Top Adventure Missions!"
+            rightText="See More"
+            onPress={() => {}}
+          />
+          <Spacer position="vertical" size={16} />
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          ></View>
         </View>
       </View>
     </SafeArea>
