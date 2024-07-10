@@ -1,14 +1,13 @@
-import { getCurrentUser } from "@/lib/api-functions";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useToast } from "react-native-toast-notifications";
 
 interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<Session | null>;
   signOut: () => void;
   signUpWithEmail: (email: string, password: string) => Promise<Session | null>;
-  user: Session | null;
+  session: Session | null;
   loading: boolean;
 }
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,13 +18,13 @@ export default function AuthProvider({
 }) {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [user, setuser] = useState<Session | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   supabase.auth.onAuthStateChange((_, session) => {
     if (!session || !session.user) {
-      setuser(null);
+      setSession(null);
       return;
     }
-    setuser(session);
+    setSession(session);
   });
   async function signInWithEmail(email: string, password: string) {
     setLoading(true);
@@ -63,26 +62,22 @@ export default function AuthProvider({
   async function signOut() {
     setLoading(true);
     const { error } = await supabase.auth.signOut();
-    setuser(null);
+    setSession(null);
     setLoading(false);
     if (error) throw new Error(error.message);
   }
-  const memFunc = useCallback(() => {
-    async function getU() {
-      const data = await getCurrentUser(user);
-      console.log(data);
-      return data;
-    }
-    getU();
-  }, [user]);
-  memFunc();
+  // async function getU() {
+  //   const data = await getCurrentUser(user);
+  //   console.log(data);
+  //   return data;
+  // }
   return (
     <AuthContext.Provider
       value={{
         signUpWithEmail,
         signInWithEmail,
         signOut,
-        user,
+        session,
         loading,
       }}
     >
