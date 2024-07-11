@@ -2,24 +2,29 @@ import SafeArea from "@/components/safearea/safearea";
 import SectionBar, { Section } from "@/components/sectionBar/section-bar";
 import Spacer from "@/components/spacer/spacer";
 import COLORS from "@/constants/colors";
-import { getUserTasks } from "@/lib/api-functions";
+import { getTasks } from "@/lib/apiTasks";
 import { useAuth } from "@/providers/AuthProvider";
+import { Task } from "@/type-declarations";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ProgressBar } from "react-native-paper";
 
 export default function Home() {
   const { session } = useAuth();
-  const { data } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["myTasks"],
     queryFn: async () => {
-      if (!session) return;
-      console.log("see this");
-      await getUserTasks(session);
+      if (!session?.user.email) {
+        return;
+      }
+      return await getTasks(session?.user.email);
     },
   });
-  console.log(data);
+  if (error) {
+    console.log(error);
+  }
+
   return (
     <SafeArea>
       <View
@@ -48,7 +53,6 @@ export default function Home() {
             <Text style={{ fontSize: 24, fontWeight: "700" }}>
               Welcome Back!
             </Text>
-            <Text style={{ fontSize: 12 }}>Jeremy Okuto</Text>
           </View>
         </View>
         <Ionicons name="notifications-outline" size={40} color="black" />
@@ -205,9 +209,38 @@ export default function Home() {
             onPress={() => {}}
           />
           <Spacer position="vertical" size={16} />
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          ></View>
+          <View style={{ gap: 6 }}>
+            {data?.map((task: Task) => (
+              <TouchableOpacity
+                key={task.task_id}
+                style={{
+                  padding: 16,
+                  backgroundColor: COLORS.light_blue,
+                  borderRadius: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    textTransform: "capitalize",
+                    fontSize: 16,
+                    fontWeight: "700",
+                    color: COLORS.white,
+                  }}
+                >
+                  {task.title}
+                </Text>
+                <Text
+                  style={{
+                    color: `${task.status === "pending" ? COLORS.red : task.status === "in-progress" ? COLORS.yellow : COLORS.green}`,
+                    textTransform: "capitalize",
+                    fontWeight: "700",
+                  }}
+                >
+                  {task.status}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
     </SafeArea>

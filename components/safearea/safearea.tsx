@@ -9,7 +9,7 @@ export default function SafeArea({ children }: { children: React.ReactNode }) {
         flex: 1,
       }}
     >
-      <View style={{ padding: 24 }}>{children}</View>
+      <View style={{ padding: 24, flex: 1 }}>{children}</View>
     </SafeAreaView>
   );
 }

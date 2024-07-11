@@ -19,7 +19,7 @@ export default function Home() {
         }}
       />
       <Tabs.Screen
-        name="(tasks)/tasks"
+        name="(tasks)"
         options={{
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="add-circle-outline" size={size} color={color} />

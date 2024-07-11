@@ -5,23 +5,9 @@ import ProfileSettingsCard from "@/components/profile/profile-settings-card";
 import Spacer from "@/components/spacer/spacer";
 import { Button } from "react-native-paper";
 import { useAuth } from "@/providers/AuthProvider";
-import { getCurrUserProfile } from "@/lib/utils-functions";
-import { useEffect, useState } from "react";
 
 export default function SettingsScreen() {
   const { signOut, session } = useAuth();
-  const [profile, setProfile] = useState<{ username: string }>({
-    username: "",
-  });
-  //  useEffect(() => {
-  //    getCurrUserProfile(session)
-  //      .then((data) => {
-  //        setProfile(data?.data);
-  //      })
-  //      .catch((error) => {
-  //        console.log(error);
-  //      });
-  //  }, [session]);
 
   return (
     <SafeArea>
