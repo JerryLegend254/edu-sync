@@ -1,18 +1,22 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import SafeArea from "@/components/safearea/safearea";
 import { Ionicons } from "@expo/vector-icons";
 import ProfileSettingsCard from "@/components/profile/profile-settings-card";
 import Spacer from "@/components/spacer/spacer";
 import { Button } from "react-native-paper";
 import { useAuth } from "@/providers/AuthProvider";
+import { profilePicUrl } from "@/lib/utils-functions";
+import { useRouter } from "expo-router";
+import COLORS from "@/constants/colors";
 
 export default function SettingsScreen() {
   const { signOut, session } = useAuth();
+  const router = useRouter();
 
   return (
     <SafeArea>
       <View style={{ alignItems: "center", gap: 16 }}>
-        <View
+        <Image
           style={{
             height: 124,
             width: 124,
@@ -20,7 +24,8 @@ export default function SettingsScreen() {
             borderRadius: 124,
             alignSelf: "center",
           }}
-        ></View>
+          source={{ uri: profilePicUrl }}
+        />
         <View
           style={{
             alignItems: "center",
@@ -44,7 +49,7 @@ export default function SettingsScreen() {
           icon="person-outline"
           title="Profile Settings"
           subtitle="Update and modify your profile"
-          onPress={() => {}}
+          onPress={() => router.push("profile")}
         />
         <ProfileSettingsCard
           icon="notifications-outline"
@@ -56,7 +61,7 @@ export default function SettingsScreen() {
           icon="key-outline"
           title="Change Password"
           subtitle="Update your account password"
-          onPress={() => {}}
+          onPress={() => router.push("change-password")}
         />
       </View>
       <Spacer position="vertical" size={40} />
@@ -70,7 +75,19 @@ export default function SettingsScreen() {
           subtitle="Personalize your categories"
           onPress={() => {}}
         />
-        <Button onPress={signOut}>Sign Out</Button>
+        <Spacer position="vertical" size={40} />
+        <Button
+          mode="outlined"
+          buttonColor={COLORS.red}
+          textColor={COLORS.white}
+          style={{
+            padding: 8,
+            borderRadius: 8,
+          }}
+          onPress={signOut}
+        >
+          Sign Out
+        </Button>
       </View>
     </SafeArea>
   );
