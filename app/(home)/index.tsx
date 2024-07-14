@@ -2,12 +2,15 @@ import SafeArea from "@/components/safearea/safearea";
 import SectionBar, { Section } from "@/components/sectionBar/section-bar";
 import Spacer from "@/components/spacer/spacer";
 import COLORS from "@/constants/colors";
+import { FONT_SIZE, FONT_WEIGHT } from "@/constants/fonts";
 import { getTasks } from "@/lib/apiTasks";
+import { profilePicUrl, truncateString } from "@/lib/utils-functions";
 import { useAuth } from "@/providers/AuthProvider";
 import { Task } from "@/type-declarations";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ProgressBar } from "react-native-paper";
 
 export default function Home() {
@@ -24,6 +27,7 @@ export default function Home() {
   if (error) {
     console.log(error);
   }
+  const router = useRouter();
 
   return (
     <SafeArea>
@@ -41,21 +45,18 @@ export default function Home() {
             alignItems: "center",
           }}
         >
-          <View
-            style={{
-              height: 56,
-              width: 56,
-              backgroundColor: "gray",
-              borderRadius: 56,
+          <Image
+            style={{ width: 56, height: 56, borderRadius: 56 }}
+            source={{
+              uri: profilePicUrl,
             }}
-          ></View>
+          />
           <View>
             <Text style={{ fontSize: 24, fontWeight: "700" }}>
               Welcome Back!
             </Text>
           </View>
         </View>
-        <Ionicons name="notifications-outline" size={40} color="black" />
       </View>
       <Spacer position="vertical" size={40} />
       <View>
@@ -206,40 +207,61 @@ export default function Home() {
           <SectionBar
             leftText="Top Adventure Missions!"
             rightText="See More"
-            onPress={() => {}}
+            onPress={() => router.push("(tasks)")}
           />
           <Spacer position="vertical" size={16} />
           <View style={{ gap: 6 }}>
-            {data?.map((task: Task) => (
-              <TouchableOpacity
-                key={task.task_id}
-                style={{
-                  padding: 16,
-                  backgroundColor: COLORS.light_blue,
-                  borderRadius: 16,
-                }}
-              >
-                <Text
+            {data
+              ?.sort((a, b) => b.task_id - a.task_id)
+              .slice(0, 3)
+              .map((task: Task) => (
+                <TouchableOpacity
+                  key={task.task_id}
                   style={{
-                    textTransform: "capitalize",
-                    fontSize: 16,
-                    fontWeight: "700",
-                    color: COLORS.white,
+                    padding: 12,
+                    backgroundColor: COLORS.light_blue,
+                    borderRadius: 16,
                   }}
+                  onPress={() =>
+                    router.push({
+                      pathname: `/(tasks)/${task.task_id}`,
+                      params: task,
+                    })
+                  }
                 >
-                  {task.title}
-                </Text>
-                <Text
-                  style={{
-                    color: `${task.status === "pending" ? COLORS.red : task.status === "in-progress" ? COLORS.yellow : COLORS.green}`,
-                    textTransform: "capitalize",
-                    fontWeight: "700",
-                  }}
-                >
-                  {task.status}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={{
+                      textTransform: "capitalize",
+                      fontSize: 16,
+                      fontWeight: "700",
+                      color: COLORS.white,
+                    }}
+                  >
+                    {truncateString(task.title, 42)}
+                  </Text>
+                  <Spacer position="vertical" size={4} />
+                  <View
+                    style={{
+                      justifyContent: "flex-start",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: COLORS.white,
+                        fontSize: FONT_SIZE.small,
+                        textTransform: "capitalize",
+                        padding: 4,
+                        fontWeight: FONT_WEIGHT.medium,
+                        borderRadius: 8,
+                        backgroundColor: `${task.status === "pending" ? COLORS.light_red : task.status === "in-progress" ? COLORS.yellow : COLORS.green}`,
+                      }}
+                    >
+                      {task.status}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
           </View>
         </View>
       </View>

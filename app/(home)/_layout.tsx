@@ -27,7 +27,7 @@ export default function Home() {
         }}
       />
       <Tabs.Screen
-        name="(study_materials)/study_materials"
+        name="(study_materials)"
         options={{
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="book-outline" size={size} color={color} />

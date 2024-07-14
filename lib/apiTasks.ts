@@ -30,3 +30,15 @@ export async function addTask(task: NewTask) {
   }
   return data;
 }
+
+export async function getSubTasks(taskId: number) {
+  const { data, error } = await supabase
+    .from("sub_tasks")
+    .select("*")
+    .eq("task_id", taskId);
+  if (error) {
+    console.log(error.message);
+    throw new Error("Error getting subtasks");
+  }
+  return data;
+}

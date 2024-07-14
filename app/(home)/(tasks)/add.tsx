@@ -1,5 +1,12 @@
 import SafeArea from "@/components/safearea/safearea";
-import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as AddCalendarEvent from "react-native-add-calendar-event";
 import moment, { Moment } from "moment";
 import { FONT_SIZE, FONT_WEIGHT } from "@/constants/fonts";
@@ -14,12 +21,10 @@ import { getCategories } from "@/lib/apiCategories";
 import { Slider } from "@react-native-assets/slider";
 import { TaskCategory } from "@/type-declarations";
 import { useToast } from "react-native-toast-notifications";
-import { supabase } from "@/lib/supabase";
 import momentTZ from "moment-timezone";
 import { addTask } from "@/lib/apiTasks";
 import { useRouter } from "expo-router";
-const eventTitle = "Lunch";
-const time_now_in_utc = moment.utc();
+import IconContainer from "@/components/iconContainer/icon-container";
 const timeZone = "Etc/GMT-3";
 
 function convertToTimeZone(date: Date, timeZone: string): string {
@@ -32,13 +37,18 @@ const utcDateToString = (momentInUTC: string | Moment) => {
   return formattedDate;
 };
 
-const addEventToCalendar = (title: string, startDate: string | Moment) => {
+export const addEventToCalendar = (
+  title: string,
+  startDate: string | Moment,
+  endDate: string | Moment,
+  notes: string,
+) => {
   const eventConfig = {
-    title: "Lunch",
+    title,
     startDate: utcDateToString(startDate),
-    endDate: utcDateToString(moment.utc(startDate).add(1, "hours")),
-    location: "The Boat House",
-    notes: "Order the salmon",
+    endDate: utcDateToString(moment.utc(endDate)),
+    allDay: true,
+    notes,
     navigationBarIOS: {
       tintColor: "orange",
       backgroundColor: "green",
@@ -54,15 +64,6 @@ const addEventToCalendar = (title: string, startDate: string | Moment) => {
       Alert.alert("Error", JSON.stringify(error));
     });
 };
-//<Text>Event Title : {eventTitle}</Text>
-//<Text>
-//  Event Date Time: {moment.utc(time_now_in_utc).local().format("lll")}
-//</Text>
-//<TouchableOpacity
-//  onPress={() => addEventToCalendar(eventTitle, time_now_in_utc)}
-//>
-//  <Text>Add Event</Text>
-//</TouchableOpacity>
 export default function TaskScreen() {
   const [dueDate, setDueDate] = useState(new Date());
   const [open, setOpen] = useState(false);
@@ -118,13 +119,6 @@ export default function TaskScreen() {
       });
       return;
     }
-    console.log("Add Task");
-    console.log("Title: ", title);
-    console.log("Description: ", description);
-    console.log("Category: ", category);
-    console.log("Priority: ", priority);
-    console.log("Status: ", status);
-    console.log("Due Date: ", dueDate);
     const newTask = {
       title,
       description,
@@ -138,11 +132,19 @@ export default function TaskScreen() {
   }
   return (
     <SafeArea>
-      <Text
-        style={{ fontSize: FONT_SIZE.extraLarge, fontWeight: FONT_WEIGHT.bold }}
-      >
-        Create Commitment
-      </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <IconContainer icon="chevron-back" />
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: FONT_SIZE.extraLarge,
+            fontWeight: FONT_WEIGHT.bold,
+          }}
+        >
+          Create Commitment
+        </Text>
+      </View>
       <Spacer position="vertical" size={16} />
       <View style={{ gap: 16 }}>
         <TextInput
@@ -215,6 +217,12 @@ export default function TaskScreen() {
             thumbTintColor={COLORS.purple} // The color of the slider's thumb
             onValueChange={(value) => setPriority(value)}
           />
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontWeight: FONT_WEIGHT.semiBold }}>Low</Text>
+            <Text style={{ fontWeight: FONT_WEIGHT.semiBold }}>High</Text>
+          </View>
         </View>
         <SelectDropdown
           data={["pending", "in-progress", "completed"]}
