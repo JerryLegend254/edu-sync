@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useToast } from "react-native-toast-notifications";
 
 interface AuthContextType {
@@ -19,13 +19,18 @@ export default function AuthProvider({
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
-  supabase.auth.onAuthStateChange((_, session) => {
-    if (!session || !session.user) {
-      setSession(null);
-      return;
-    }
-    setSession(session);
-  });
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((_, session) => {
+      if (!session || !session.user) {
+        setSession(null);
+        return;
+      }
+      setSession(session);
+    });
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, []);
   async function signInWithEmail(email: string, password: string) {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({

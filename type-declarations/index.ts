@@ -15,3 +15,12 @@ export type TaskCategory = {
   tc_id: number;
   title: string;
 };
+
+export type StudyMaterial = {
+  sm_id: number;
+  title: string;
+  created_by: number;
+  description: string;
+  url: string;
+  keywords: string;
+};
