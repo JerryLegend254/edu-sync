@@ -7,11 +7,12 @@ import { getCategoryTitle, rankTaskPriority } from "@/lib/utils-functions";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
-import { Button, Checkbox, Divider } from "react-native-paper";
+import { Button, Checkbox, Divider, Modal, Portal } from "react-native-paper";
 import { addEventToCalendar } from "./add";
 import moment from "moment";
 import { getSubTasks } from "@/lib/apiTasks";
 import { supabase } from "@/lib/supabase";
+import { useState } from "react";
 
 export default function TaskDetail() {
   const router = useRouter();
@@ -33,7 +34,11 @@ export default function TaskDetail() {
   if (categoryErr) {
     console.log(categoryErr);
   }
-  console.log(subTasks);
+  const [visible, setVisible] = useState(false);
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  const containerStyle = { backgroundColor: "white", padding: 20, margin: 24 };
   return (
     <SafeArea>
       <View style={{ gap: 16 }}>
@@ -174,6 +179,15 @@ export default function TaskDetail() {
           </Text>
         </View>
         <Divider />
+        <Portal>
+          <Modal
+            visible={visible}
+            onDismiss={hideModal}
+            contentContainerStyle={containerStyle}
+          >
+            <Text>Example Modal. Click outside this area to dismiss.</Text>
+          </Modal>
+        </Portal>
         <View
           style={{
             flexDirection: "row",
@@ -189,7 +203,7 @@ export default function TaskDetail() {
           >
             Sub tasks
           </Text>
-          <Button mode="contained-tonal" icon={"plus"}>
+          <Button onPress={showModal} mode="contained-tonal" icon={"plus"}>
             Add subtasks
           </Button>
         </View>
@@ -228,6 +242,7 @@ export default function TaskDetail() {
           })}
         </View>
         <Button
+          onPress={() => router.push(`(tasks)/${task.id}/edit`)}
           style={{ borderRadius: 12 }}
           buttonColor={COLORS.purple}
           textColor={COLORS.white}

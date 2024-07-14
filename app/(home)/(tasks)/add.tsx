@@ -283,6 +283,7 @@ export default function TaskScreen() {
       </View>
       <View style={{ position: "absolute", bottom: 16, width: "100%" }}>
         <Button
+          textColor={COLORS.white}
           mode="contained"
           buttonColor={COLORS.purple}
           style={{ borderRadius: 8, marginHorizontal: 24, width: "100%" }}

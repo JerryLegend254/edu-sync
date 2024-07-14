@@ -2,6 +2,7 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
+import moment from "moment";
 
 export const fileImageUrl =
   "https://www.iconpacks.net/icons/2/free-file-icon-1453-thumb.png";
@@ -81,4 +82,8 @@ export async function downloadFromUrl(url: string, fileName: string) {
 
 function save(uri: string) {
   shareAsync(uri);
+}
+
+export function humanizeDateDiff(date: string) {
+  return `${moment.duration(moment().diff(moment(date))).humanize()} left`;
 }

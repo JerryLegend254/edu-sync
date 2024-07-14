@@ -3,18 +3,33 @@ import SectionBar, { Section } from "@/components/sectionBar/section-bar";
 import Spacer from "@/components/spacer/spacer";
 import COLORS from "@/constants/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "@/constants/fonts";
+import { getCategories } from "@/lib/apiCategories";
 import { getTasks } from "@/lib/apiTasks";
-import { profilePicUrl, truncateString } from "@/lib/utils-functions";
+import {
+  getCategoryTitle,
+  humanizeDateDiff,
+  profilePicUrl,
+  rankTaskPriority,
+  truncateString,
+} from "@/lib/utils-functions";
 import { useAuth } from "@/providers/AuthProvider";
 import { Task } from "@/type-declarations";
-import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { ProgressBar } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function Home() {
   const { session } = useAuth();
+  const { data: categories, error: FetchCategoryErr } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
+
+  if (FetchCategoryErr) {
+    console.log(FetchCategoryErr);
+  }
+
   const { data, error } = useQuery({
     queryKey: ["myTasks"],
     queryFn: async () => {
@@ -28,6 +43,17 @@ export default function Home() {
     console.log(error);
   }
   const router = useRouter();
+  const completedTasks = data?.filter(
+    (task: Task) => task.status === "completed",
+  ).length;
+
+  if (!data) {
+    return (
+      <SafeArea>
+        <ActivityIndicator animating color={COLORS.purple} />
+      </SafeArea>
+    );
+  }
 
   return (
     <SafeArea>
@@ -63,7 +89,7 @@ export default function Home() {
         <SectionBar
           leftText="Recent Activity"
           rightText="See More"
-          onPress={() => {}}
+          onPress={() => router.push("(tasks)")}
         />
         <Spacer position="vertical" size={16} />
         <View style={{ columnGap: 6, flexDirection: "row" }}>
@@ -80,9 +106,11 @@ export default function Home() {
             >
               <View>
                 <Text style={[styles.whiteBoldText, styles.largeText]}>
-                  Task Project
+                  Task Progress
                 </Text>
-                <Text style={{ color: "white", fontSize: 12 }}>20/17</Text>
+                <Text style={{ color: "white", fontSize: 12 }}>
+                  {completedTasks}/{data?.length}
+                </Text>
               </View>
               <View
                 style={{
@@ -94,7 +122,9 @@ export default function Home() {
                   borderColor: "white",
                 }}
               >
-                <Text style={styles.whiteBoldText}>75%</Text>
+                <Text style={styles.whiteBoldText}>
+                  {((completedTasks || 0) / (data?.length || 0)) * 100}%
+                </Text>
               </View>
             </View>
 
@@ -106,14 +136,15 @@ export default function Home() {
                 borderRadius: 24,
               }}
             >
-              <Text style={[{ color: "white" }, styles.smallText]}>
-                Design Sprint
+              <Text style={styles.whiteBoldText}>
+                {truncateString(data![data!.length - 1].title, 20)}
               </Text>
-              <Text style={styles.whiteBoldText}>MONEEQ</Text>
               <Text style={[styles.whiteBoldText, styles.largeText]}>
-                Web Design
+                {getCategoryTitle(categories, data![data!.length - 1].category)}
               </Text>
-              <Text style={styles.whiteBoldText}>One more week</Text>
+              <Text style={styles.whiteBoldText}>
+                {humanizeDateDiff(data![data!.length - 1].due_date)}
+              </Text>
               <View
                 style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
               >
@@ -122,10 +153,12 @@ export default function Home() {
                     height: 8,
                     width: 8,
                     borderRadius: 8,
-                    backgroundColor: "red",
+                    backgroundColor: `${data![data!.length - 1].priority <= 3 ? COLORS.green : data![data!.length - 1].priority <= 5 ? COLORS.yellow : data![data!.length - 1].priority <= 7 ? COLORS.orange : COLORS.red}`,
                   }}
                 ></View>
-                <Text style={{ color: "white" }}>High Priority</Text>
+                <Text style={{ color: "white" }}>
+                  {rankTaskPriority(data![data!.length - 1].priority)}
+                </Text>
               </View>
               <Spacer position="vertical" size={8} />
               <View
@@ -134,12 +167,7 @@ export default function Home() {
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}
-              >
-                <View style={{ width: "75%" }}>
-                  <ProgressBar progress={0.5} color="blue" />
-                </View>
-                <Text style={styles.whiteBoldText}>50%</Text>
-              </View>
+              ></View>
             </View>
           </View>
 
@@ -153,23 +181,22 @@ export default function Home() {
                 borderRadius: 24,
               }}
             >
-              <Text style={styles.whiteBoldText}>MONEEQ</Text>
-              <Text style={[styles.whiteBoldText, styles.largeText]}>
-                Web Design
+              <Text style={styles.whiteBoldText}>
+                {truncateString(data![data!.length - 2].title, 20)}
               </Text>
-              <Text style={styles.whiteBoldText}>One more week</Text>
+              <Text style={[styles.whiteBoldText, styles.largeText]}>
+                {getCategoryTitle(categories, data![data!.length - 2].category)}
+              </Text>
+              <Text style={styles.whiteBoldText}>
+                {humanizeDateDiff(data![data!.length - 2].due_date)}
+              </Text>
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}
-              >
-                <View style={{ width: "75%" }}>
-                  <ProgressBar progress={0.5} color="blue" />
-                </View>
-                <Text style={styles.whiteBoldText}>50%</Text>
-              </View>
+              ></View>
             </View>
 
             <View
@@ -181,11 +208,15 @@ export default function Home() {
                 borderRadius: 24,
               }}
             >
-              <Text style={styles.whiteBoldText}>MONEEQ</Text>
+              <Text style={styles.whiteBoldText}>
+                {truncateString(data![data!.length - 3].title, 20)}
+              </Text>
               <Text style={[styles.whiteBoldText, styles.largeText]}>
                 Web Design
               </Text>
-              <Text style={styles.whiteBoldText}>One more week</Text>
+              <Text style={styles.whiteBoldText}>
+                {humanizeDateDiff(data![data!.length - 3].due_date)}
+              </Text>
 
               <View
                 style={{
@@ -193,12 +224,7 @@ export default function Home() {
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}
-              >
-                <View style={{ width: "75%" }}>
-                  <ProgressBar progress={0.5} color="blue" />
-                </View>
-                <Text style={styles.whiteBoldText}>50%</Text>
-              </View>
+              ></View>
             </View>
           </View>
         </View>
@@ -213,6 +239,7 @@ export default function Home() {
           <View style={{ gap: 6 }}>
             {data
               ?.sort((a, b) => b.task_id - a.task_id)
+              .filter((tsk: Task) => tsk.status !== "completed")
               .slice(0, 3)
               .map((task: Task) => (
                 <TouchableOpacity
