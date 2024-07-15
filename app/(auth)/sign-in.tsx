@@ -113,7 +113,7 @@ export default function LoginForm() {
             }
           >
             <Pressable
-              onPress={() =>
+              onPress={() => // Alert Box to confirm a user wishes to reset their password
                 Alert.alert(
                   "Forgot Password",
                   "Are you sure you wish to reset your password? ",

@@ -28,7 +28,7 @@ export default function ForgotPasswordForm() {
 
   async function handleForgotPassword() {
     console.log(email);
-    let wsRegex = /^\s+|\s+$/g;
+    let wsRegex = /^\s+|\s+$/g; // This is to facilitate correct format on email entry and disregard spaces.
     const replaceemail = email.replaceAll(wsRegex, "");
 
     if (!email) {
