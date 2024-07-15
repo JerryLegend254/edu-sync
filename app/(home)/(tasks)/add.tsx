@@ -97,7 +97,7 @@ export default function TaskScreen() {
       setPriority(5);
       setStatus("pending");
       setDueDate(new Date());
-      router.push("(home)");
+      router.push("(tasks)");
     },
     onError: (error) => toast.show(error.message, { type: "danger" }),
   });

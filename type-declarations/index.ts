@@ -24,3 +24,14 @@ export type StudyMaterial = {
   url: string;
   keywords: string;
 };
+
+export type NewStudyMaterial = Omit<StudyMaterial, "sm_id">;
+
+export type SubTask = {
+  id: number;
+  task_id: number;
+  title: string;
+  completed: boolean;
+};
+
+export type NewSubTask = Omit<SubTask, "id">;

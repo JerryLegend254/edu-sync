@@ -4,20 +4,22 @@ import COLORS from "@/constants/colors";
 import { FONT_SIZE, FONT_WEIGHT } from "@/constants/fonts";
 import { getCategories } from "@/lib/apiCategories";
 import { getCategoryTitle, rankTaskPriority } from "@/lib/utils-functions";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Checkbox, Divider, Modal, Portal } from "react-native-paper";
 import { addEventToCalendar } from "./add";
 import moment from "moment";
-import { getSubTasks } from "@/lib/apiTasks";
+import { addSubTask, getSubTasks } from "@/lib/apiTasks";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
+import { useToast } from "react-native-toast-notifications";
 
 export default function TaskDetail() {
   const router = useRouter();
   const task = useLocalSearchParams();
   const queryClient = useQueryClient();
+  const toast = useToast();
   const { data: subTasks, error: FetchingSubTaskError } = useQuery({
     queryKey: ["subtasks"],
     queryFn: async () => {
@@ -34,11 +36,39 @@ export default function TaskDetail() {
   if (categoryErr) {
     console.log(categoryErr);
   }
+  const { mutate } = useMutation({
+    mutationFn: addSubTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subtasks"] });
+      toast.show("Subtask added successfully", {
+        placement: "top",
+      });
+      setSubTaskTitle("");
+      setSubTaskCompleted(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.show("Error adding subtask", {
+        placement: "top",
+      });
+    },
+  });
   const [visible, setVisible] = useState(false);
+  const [subTaskTitle, setSubTaskTitle] = useState("");
+  const [subTaskCompleted, setSubTaskCompleted] = useState(false);
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   const containerStyle = { backgroundColor: "white", padding: 20, margin: 24 };
+  function handleAddSubTask() {
+    const newSubTask = {
+      title: subTaskTitle,
+      completed: subTaskCompleted,
+      task_id: parseInt(task.task_id),
+    };
+    mutate(newSubTask);
+    hideModal();
+  }
   return (
     <SafeArea>
       <View style={{ gap: 16 }}>
@@ -185,7 +215,43 @@ export default function TaskDetail() {
             onDismiss={hideModal}
             contentContainerStyle={containerStyle}
           >
-            <Text>Example Modal. Click outside this area to dismiss.</Text>
+            <View style={{ gap: 16 }}>
+              <TextInput
+                style={{
+                  borderColor: COLORS.gray,
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                  borderWidth: 1,
+                  borderRadius: 12,
+                }}
+                placeholder="Add Title"
+                value={subTaskTitle}
+                onChangeText={setSubTaskTitle}
+              />
+              <View
+                style={{ gap: 16, flexDirection: "row", alignItems: "center" }}
+              >
+                <Text
+                  style={{
+                    fontSize: FONT_SIZE.large,
+                    fontWeight: FONT_WEIGHT.bold,
+                  }}
+                >
+                  Completed
+                </Text>
+                <Checkbox
+                  status={subTaskCompleted ? "checked" : "unchecked"}
+                  onPress={() => setSubTaskCompleted(!subTaskCompleted)}
+                />
+              </View>
+              <Button
+                style={{ borderRadius: 12, backgroundColor: COLORS.purple }}
+                onPress={handleAddSubTask}
+                mode="contained-tonal"
+              >
+                Add Subtask
+              </Button>
+            </View>
           </Modal>
         </Portal>
         <View

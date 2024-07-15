@@ -12,13 +12,38 @@ import { useToast } from "react-native-toast-notifications";
 import { Button } from "react-native-paper";
 import BarContainer from "@/components/bar-container/bar-container";
 import { router } from "expo-router";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addStudyMaterial } from "@/lib/apiStudyMaterial";
 export default function AddStudyMaterialScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [keywords, setKeywords] = useState("");
-  const [file, setFile] = useState<string | null>(null);
+  const [file, setFile] = useState("");
+  const [url, setUrl] = useState("");
   const { session } = useAuth();
   const toast = useToast();
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: addStudyMaterial,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["study_materials"] });
+      setTitle("");
+      setDescription("");
+      setKeywords("");
+      setFile("");
+      toast.show("Study Material added successfully", {
+        type: "success",
+        placement: "top",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.show("Error adding study material", {
+        type: "danger",
+        placement: "top",
+      });
+    },
+  });
 
   const onSelectDocument = async () => {
     // TODO
@@ -45,8 +70,26 @@ export default function AddStudyMaterialScreen() {
         });
       }
       setFile(document.assets[0].name);
+      const {
+        data: { publicUrl },
+      } = supabase.storage
+        .from("study_material")
+        .getPublicUrl(`${session?.user.id}_${doc.name}`);
+      console.log(publicUrl);
+      setUrl(publicUrl);
     }
   };
+
+  function handleAddStudyMaterial() {
+    const newStudyMaterial = {
+      title,
+      description,
+      keywords,
+      url,
+      created_by: 5,
+    };
+    mutate(newStudyMaterial);
+  }
   return (
     <SafeArea>
       <View style={{ gap: 16 }}>
@@ -100,7 +143,7 @@ export default function AddStudyMaterialScreen() {
             backgroundColor: COLORS.purple,
           }}
           textColor={COLORS.white}
-          onPress={() => {}}
+          onPress={handleAddStudyMaterial}
         >
           Add Study Material
         </Button>

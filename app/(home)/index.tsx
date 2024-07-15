@@ -123,7 +123,10 @@ export default function Home() {
                 }}
               >
                 <Text style={styles.whiteBoldText}>
-                  {((completedTasks || 0) / (data?.length || 0)) * 100}%
+                  {parseInt(
+                    ((completedTasks || 0) / (data?.length || 0)) * 100,
+                  )}
+                  %
                 </Text>
               </View>
             </View>
@@ -137,7 +140,7 @@ export default function Home() {
               }}
             >
               <Text style={styles.whiteBoldText}>
-                {truncateString(data![data!.length - 1].title, 20)}
+                {truncateString(data![data!.length - 1].title, 18)}
               </Text>
               <Text style={[styles.whiteBoldText, styles.largeText]}>
                 {getCategoryTitle(categories, data![data!.length - 1].category)}
@@ -182,7 +185,7 @@ export default function Home() {
               }}
             >
               <Text style={styles.whiteBoldText}>
-                {truncateString(data![data!.length - 2].title, 20)}
+                {truncateString(data![data!.length - 2].title, 18)}
               </Text>
               <Text style={[styles.whiteBoldText, styles.largeText]}>
                 {getCategoryTitle(categories, data![data!.length - 2].category)}
@@ -209,10 +212,10 @@ export default function Home() {
               }}
             >
               <Text style={styles.whiteBoldText}>
-                {truncateString(data![data!.length - 3].title, 20)}
+                {truncateString(data![data!.length - 3].title, 18)}
               </Text>
               <Text style={[styles.whiteBoldText, styles.largeText]}>
-                Web Design
+                {getCategoryTitle(categories, data![data!.length - 3].category)}
               </Text>
               <Text style={styles.whiteBoldText}>
                 {humanizeDateDiff(data![data!.length - 3].due_date)}

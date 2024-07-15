@@ -1,4 +1,4 @@
-import { NewTask } from "@/type-declarations";
+import { NewSubTask, NewTask } from "@/type-declarations";
 import { supabase } from "./supabase";
 
 export async function getTasks(email: string) {
@@ -39,6 +39,15 @@ export async function getSubTasks(taskId: number) {
   if (error) {
     console.log(error.message);
     throw new Error("Error getting subtasks");
+  }
+  return data;
+}
+
+export async function addSubTask(subTask: NewSubTask) {
+  const { data, error } = await supabase.from("sub_tasks").insert([subTask]);
+  if (error) {
+    console.log(error.message);
+    throw new Error("Error adding subtask");
   }
   return data;
 }

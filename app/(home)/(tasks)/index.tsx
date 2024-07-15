@@ -12,6 +12,7 @@ import { FAB, ProgressBar } from "react-native-paper";
 import COLORS from "@/constants/colors";
 import {
   getCategoryTitle,
+  humanizeDateDiff,
   rankTaskPriority,
   truncateString,
 } from "@/lib/utils-functions";
@@ -89,7 +90,9 @@ export default function Tasks() {
                 <Text style={[styles.whiteBoldText, styles.largeText]}>
                   {getCategoryTitle(categories, item.category)}
                 </Text>
-                <Text style={styles.whiteBoldText}>One more week</Text>
+                <Text style={styles.whiteBoldText}>
+                  {humanizeDateDiff(item.due_date)}
+                </Text>
                 <View
                   style={{
                     flexDirection: "row",
