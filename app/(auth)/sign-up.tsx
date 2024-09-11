@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import DialogAndroid from 'react-native-dialogs';;
+import DialogAndroid from "react-native-dialogs";
 import { useToast } from "react-native-toast-notifications";
 import {
   Image,
@@ -21,16 +21,19 @@ export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isPasswordShown, setIsPasswordShown]= useState(false);
+  const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isConfirmPasswordShown, setIsConfirmPasswordShown]= useState(false);
+  const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false);
   const toast = useToast();
   const { signUpWithEmail } = useAuth();
   async function handleSignUp() {
     console.log(email, password, username);
     let wsRegex = /^\s+|\s+$/g;
     const replaceemail = email.replaceAll(wsRegex, "");
-    const { data, error } = await supabase.auth.signUp({ email:replaceemail, password });
+    const { data, error } = await supabase.auth.signUp({
+      email: replaceemail,
+      password,
+    });
     if (error) {
       toast.show(error.message, { type: "danger" });
     } else {
@@ -72,8 +75,8 @@ export default function LoginForm() {
           autoCapitalize="none"
           placeholderTextColor={"white"}
         />
-        </View>
-        <View style={styles.inputView}>
+      </View>
+      <View style={styles.inputView}>
         <TextInput
           style={styles.input}
           placeholder="password"
@@ -84,24 +87,22 @@ export default function LoginForm() {
           autoCapitalize="none"
           placeholderTextColor={"white"}
         />
-         <TouchableOpacity
-          onPress={() =>setIsPasswordShown(!isPasswordShown)}
+        <TouchableOpacity
+          onPress={() => setIsPasswordShown(!isPasswordShown)}
           style={{
             position: "absolute",
             right: 50,
-            top: 12
+            top: 12,
           }}
-          >
-          {
-            isPasswordShown == true ? (
-              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
-            ) :(
-              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
-            )
-          }
+        >
+          {isPasswordShown == true ? (
+            <Ionicons name="eye" size={24} color={"#ebedf0"} />
+          ) : (
+            <Ionicons name="eye-off" size={24} color={"#ebedf0"} />
+          )}
         </TouchableOpacity>
-        </View>
-        <View style={styles.password}>
+      </View>
+      <View style={styles.password}>
         <TextInput
           style={styles.input}
           placeholder="confirm password"
@@ -113,21 +114,19 @@ export default function LoginForm() {
           placeholderTextColor={"white"}
         />
         <TouchableOpacity
-          onPress={() =>setIsConfirmPasswordShown(!isConfirmPasswordShown)}
+          onPress={() => setIsConfirmPasswordShown(!isConfirmPasswordShown)}
           style={{
             position: "absolute",
             right: 50,
-            top: 12
+            top: 12,
           }}
-          >
-          {
-            isConfirmPasswordShown == true ? (
-              <Ionicons name="eye" size={24} color={"#ebedf0"}/>
-            ) :(
-              <Ionicons name="eye-off" size={24} color={"#ebedf0"}/>
-            )
-          }
-          </TouchableOpacity>
+        >
+          {isConfirmPasswordShown == true ? (
+            <Ionicons name="eye" size={24} color={"#ebedf0"} />
+          ) : (
+            <Ionicons name="eye-off" size={24} color={"#ebedf0"} />
+          )}
+        </TouchableOpacity>
       </View>
 
       <View style={{ marginHorizontal: 20, width: "78%" }}>
@@ -137,7 +136,7 @@ export default function LoginForm() {
           style={{ borderRadius: 12, width: "100%", paddingVertical: 4 }}
           onPress={handleSignUp}
         >
-          Login
+          Register
         </Button>
       </View>
 
@@ -170,7 +169,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     color: "white",
   },
-  password:{
+  password: {
     gap: 15,
     width: "100%",
     paddingHorizontal: 40,

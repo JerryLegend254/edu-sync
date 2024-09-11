@@ -24,7 +24,7 @@ export default function ForgotPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isConfirmPasswordShown, setIsConfirmPasswordShown]= useState(false);*/
   const toast = useToast();
-  const {  } = useAuth();
+  const {} = useAuth();
 
   async function handleForgotPassword() {
     console.log(email);
@@ -40,24 +40,27 @@ export default function ForgotPasswordForm() {
     }
 
     //const handleForgotPassword = async () => {
-      try {
-        const { data,error } = await supabase.auth.resetPasswordForEmail(replaceemail, {
-          redirectTo: '(auth)/reset-password', 
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(
+        replaceemail,
+        {
+          redirectTo: "(auth)/reset-password",
+        },
+      );
+      if (error) {
+        console.error("Error sending reset password email:", error);
+      } else {
+        toast.show("Please check your inbox for a reset password link!", {
+          type: "success",
         });
-        if (error) {
-          console.error('Error sending reset password email:', error);
-        } else {
-          toast.show("Please check your inbox for a reset password link!", {
-            type: "success",
-          });
-          console.log(data);
-        }
-      } catch (error) {
-        console.error('Unexpected error:', error);
+        console.log(data);
       }
-    };
-  
-  return(
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  }
+
+  return (
     <SafeAreaView style={styles.container}>
       <Image
         source={require("../../assets/images/waves.jpg")}
@@ -78,28 +81,32 @@ export default function ForgotPasswordForm() {
           autoCorrect={false}
           autoCapitalize="none"
           placeholderTextColor={"white"}
-          />
+        />
 
-      <View style={{ marginHorizontal: 20, width: "68%" }}>
-        <Button
-          mode="contained"
-          buttonColor="#6ba4ff"
-          style={{ borderRadius: 12,width: "100%", paddingVertical: 4,left:25 }}
-          onPress={handleForgotPassword}
-          
+        <View style={{ marginHorizontal: 20, width: "68%" }}>
+          <Button
+            mode="contained"
+            buttonColor="#6ba4ff"
+            style={{
+              borderRadius: 12,
+              width: "100%",
+              paddingVertical: 4,
+              left: 25,
+            }}
+            onPress={handleForgotPassword}
           >
-          Send Password reset link
-        </Button>
-        <Text style={styles.footerText}>
-        <Link href="(auth)/sign-in">
-          Back to sign-in?<Text style={styles.signup}> Sign In</Text>
-        </Link>
-      </Text>
+            Send Password reset link
+          </Button>
+          <Text style={styles.footerText}>
+            <Link href="(auth)/sign-in">
+              Back to sign-in?<Text style={styles.signup}> Sign In</Text>
+            </Link>
+          </Text>
+        </View>
       </View>
-      </View>
-      </SafeAreaView>
-    );
-  };
+    </SafeAreaView>
+  );
+}
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
@@ -119,7 +126,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
     color: "white",
   },
-  password:{
+  password: {
     gap: 15,
     width: "100%",
     paddingHorizontal: 40,
@@ -201,7 +208,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "gray",
     marginTop: 16,
-    left:25
+    left: 25,
   },
   signup: {
     color: "white",

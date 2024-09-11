@@ -55,7 +55,7 @@ export default function SettingsScreen() {
           icon="notifications-outline"
           title="Notification Settings"
           subtitle="Change your notification settings"
-          onPress={() => {}}
+          onPress={() => router.push("notification")}
         />
         <ProfileSettingsCard
           icon="key-outline"
@@ -73,7 +73,7 @@ export default function SettingsScreen() {
           icon="folder-open-outline"
           title="My Categories"
           subtitle="Personalize your categories"
-          onPress={() => {}}
+          onPress={() => router.push("my-categories")}
         />
         <Spacer position="vertical" size={40} />
         <Button
